@@ -1,0 +1,141 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+      version: ${{ steps.get_version.outputs.version }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Get Version
+        id: get_version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        
+      - name: Generate Changelog
+        id: changelog
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { execSync } = require('child_process');
+            
+            // Get tag date and message
+            const tagDate = execSync(`git log -1 --format=%ai ${process.env.GITHUB_REF}`).toString().trim();
+            const tagMsg = execSync(`git tag -l --format='%(contents)' ${process.env.GITHUB_REF.replace('refs/tags/', '')}`).toString().trim() || 'Release ${process.env.GITHUB_REF.replace("refs/tags/", "")}';
+            
+            // Get previous tag
+            let previousTag = '';
+            try {
+              previousTag = execSync(`git describe --tags --abbrev=0 ${process.env.GITHUB_REF}^`).toString().trim();
+            } catch (error) {
+              console.log('No previous tag found');
+            }
+            
+            // Generate commit log
+            let commitLog = '';
+            if (previousTag) {
+              commitLog = execSync(`git log ${previousTag}..${process.env.GITHUB_REF} --pretty=format:"* %s (%h)" --no-merges`).toString().trim();
+            } else {
+              commitLog = execSync(`git log ${process.env.GITHUB_REF} --pretty=format:"* %s (%h)" --no-merges`).toString().trim();
+            }
+            
+            // Format changelog
+            const changelog = `## ${process.env.GITHUB_REF.replace('refs/tags/', '')} (${tagDate.split(' ')[0]})
+
+${tagMsg}
+
+### Commit Log
+
+${commitLog}
+
+### Docker Image
+
+\`\`\`bash
+docker pull ghcr.io/${context.repo.owner}/searchbeam:${process.env.GITHUB_REF.replace('refs/tags/', '')}
+\`\`\`
+
+Supported architectures: linux/amd64, linux/arm64`;
+            
+            return changelog;
+      
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref_name }}
+          body: ${{ steps.changelog.outputs.result }}
+          draft: false
+          prerelease: false
+          
+  build-release:
+    name: Build Release Image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: create-release
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install Dependencies
+        run: npm ci
+        
+      - name: Build Project
+        run: npm run build
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v2
+        
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Build and Push Multi-arch Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/searchbeam:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/searchbeam:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          
+      - name: Update Release Info
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: ${{ needs.create-release.outputs.upload_url }}.split('/')[7].split('?')[0],
+              body: ${{ steps.changelog.outputs.result }} + `\n\nDocker Image Updated: \`ghcr.io/${{ github.repository_owner }}/searchbeam:${{ github.ref_name }}\`\nSupported architectures: linux/amd64, linux/arm64`
+            }); 

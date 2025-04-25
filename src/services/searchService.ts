@@ -1,6 +1,6 @@
-import { searchYoutube } from '../api/youtube';
-import { SearchParams, SearchResponse, SupportedPlatform } from '../types';
-import cacheService from './cacheService';
+import { searchYoutube } from "../api/youtube";
+import { SearchParams, SearchResponse, SupportedPlatform } from "../types";
+import cacheService from "./cacheService";
 
 /**
  * 搜索服务实现
@@ -18,7 +18,7 @@ class SearchService {
     if (!this.isValidPlatform(platform)) {
       return {
         items: [],
-        error: `不支持的平台: ${platform}. 当前支持: youtube`,
+        error: `Unsupported platform: ${platform}. Currently supported: youtube`,
       };
     }
 
@@ -30,15 +30,15 @@ class SearchService {
 
     // 根据平台分发请求
     let result: SearchResponse;
-    
+
     try {
-      if (platform === 'youtube') {
+      if (platform === "youtube") {
         result = await searchYoutube(params);
       } else {
         // 为未来其他平台预留，目前已在上面验证
         result = {
           items: [],
-          error: '平台不可用',
+          error: "Platform not available",
         };
       }
 
@@ -49,10 +49,10 @@ class SearchService {
 
       return result;
     } catch (error) {
-      console.error(`搜索错误 (${platform}):`, error);
+      console.error(`Search error (${platform}):`, error);
       return {
         items: [],
-        error: '搜索处理失败',
+        error: "Search processing failed",
       };
     }
   }
@@ -63,9 +63,9 @@ class SearchService {
    * @returns boolean 是否支持
    */
   private isValidPlatform(platform: string): platform is SupportedPlatform {
-    return platform === 'youtube'; // 目前只支持YouTube
+    return platform === "youtube"; // Currently only supports YouTube
   }
 }
 
 // 导出单例
-export default new SearchService(); 
+export default new SearchService();

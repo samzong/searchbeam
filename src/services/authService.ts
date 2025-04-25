@@ -1,4 +1,4 @@
-import config from '../config';
+import config from "../config";
 
 /**
  * 认证服务实现
@@ -26,10 +26,13 @@ class AuthService {
    * @param query 查询参数
    * @returns string|undefined Token
    */
-  extractToken(headers: Record<string, string>, query: Record<string, string>): string | undefined {
+  extractToken(
+    headers: Record<string, string>,
+    query: Record<string, string>,
+  ): string | undefined {
     // 从Authorization头中提取
     const authHeader = headers.authorization;
-    if (authHeader && authHeader.startsWith('Bearer ')) {
+    if (authHeader && authHeader.startsWith("Bearer ")) {
       return authHeader.slice(7);
     }
 
@@ -43,4 +46,4 @@ class AuthService {
 }
 
 // 导出单例
-export default new AuthService(); 
+export default new AuthService();

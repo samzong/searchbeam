@@ -1,6 +1,6 @@
-import { LRUCache } from 'lru-cache';
-import config from '../config';
-import { SearchResponse } from '../types';
+import { LRUCache } from "lru-cache";
+import config from "../config";
+import { SearchResponse } from "../types";
 
 /**
  * 缓存配置
@@ -23,14 +23,22 @@ class CacheService {
   /**
    * 生成缓存键
    */
-  private generateKey(platform: string, query: string, pageToken?: string): string {
-    return `${platform}:${query}:${pageToken || 'first'}`;
+  private generateKey(
+    platform: string,
+    query: string,
+    pageToken?: string,
+  ): string {
+    return `${platform}:${query}:${pageToken || "first"}`;
   }
 
   /**
    * 获取缓存内容
    */
-  get(platform: string, query: string, pageToken?: string): SearchResponse | undefined {
+  get(
+    platform: string,
+    query: string,
+    pageToken?: string,
+  ): SearchResponse | undefined {
     const key = this.generateKey(platform, query, pageToken);
     return this.cache.get(key);
   }
@@ -38,7 +46,12 @@ class CacheService {
   /**
    * 存储内容到缓存
    */
-  set(platform: string, query: string, data: SearchResponse, pageToken?: string): void {
+  set(
+    platform: string,
+    query: string,
+    data: SearchResponse,
+    pageToken?: string,
+  ): void {
     const key = this.generateKey(platform, query, pageToken);
     this.cache.set(key, data);
   }
@@ -60,4 +73,4 @@ class CacheService {
 }
 
 // 导出单例
-export default new CacheService(); 
+export default new CacheService();

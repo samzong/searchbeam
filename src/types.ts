@@ -46,4 +46,4 @@ export interface ApiError {
 /**
  * 支持的搜索平台类型
  */
-export type SupportedPlatform = 'youtube' | 'bilibili'; 
+export type SupportedPlatform = "youtube" | "bilibili";
