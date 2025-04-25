@@ -1,0 +1,46 @@
+# 依赖目录
+node_modules/
+.pnp/
+.pnp.js
+
+# 构建输出
+dist/
+build/
+.next/
+out/
+.vercel/
+
+# 环境变量
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 日志
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 编辑器配置
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# 测试覆盖率
+coverage/
+
+# 缓存目录
+.npm
+.eslintcache
+.cache
+
+# API密钥和凭据
+*.pem
+
+# Other
+TODO.md
