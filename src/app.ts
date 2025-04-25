@@ -9,11 +9,12 @@ import { SearchParams } from "./types";
 // 创建Fastify实例
 const app: FastifyInstance = Fastify({
   logger: true,
+  trustProxy: true // 信任代理，Vercel环境需要
 });
 
 // 注册CORS插件
 app.register(cors, {
-  origin: config.cors.origin,
+  origin: true, // 在Vercel环境中允许所有来源
   methods: ["GET", "OPTIONS"],
 });
 
@@ -98,9 +99,15 @@ app.setErrorHandler((error, request, reply) => {
   });
 });
 
-// 启动服务器
+// 启动服务器 - 仅在直接运行时启动
 const start = async (): Promise<void> => {
   try {
+    // 在Vercel环境中不需要listen
+    if (process.env.VERCEL) {
+      console.log('Running on Vercel');
+      return;
+    }
+    
     await app.listen({ port: config.port, host: "0.0.0.0" });
     console.log(`Server running in http://localhost:${config.port}`);
   } catch (err) {
@@ -114,5 +121,5 @@ if (require.main === module) {
   start();
 }
 
-// 导出应用实例，便于测试
+// 导出应用实例，便于测试和Vercel部署
 export default app;
