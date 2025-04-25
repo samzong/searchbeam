@@ -1,7 +1,7 @@
 {
   "name": "searchbeam",
   "version": "0.1.0",
-  "description": "高性能云端视频搜索API服务，代理多平台搜索请求",
+  "description": "High-performance cloud video search API service, proxy multi-platform search request",
   "main": "dist/app.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",

@@ -17,6 +17,19 @@ app.register(cors, {
   methods: ["GET", "OPTIONS"],
 });
 
+// 根路由
+app.get("/", async (request, reply) => {
+  return {
+    name: "searchbeam",
+    description: "High-performance cloud video search API service, proxy multi-platform search request.",
+    version: "1.0.0",
+    endpoints: [
+      { path: "/health", description: "Health check endpoint" },
+      { path: "/search?platform=youtube&q=baby&token=token", description: "Search endpoint, requires authentication" }
+    ]
+  };
+});
+
 // 健康检查路由
 app.get("/health", async (request, reply) => {
   return { status: "ok", timestamp: new Date().toISOString() };
