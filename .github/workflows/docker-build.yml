@@ -1,9 +1,11 @@
 name: Docker Image Build
 
 on:
+  release:
+    types: [published]
   push:
-    branches:
-      - main
+    tags:
+      - 'v*'
     paths-ignore:
       - '**.md'
       - '.github/**'
@@ -14,7 +16,7 @@ jobs:
     name: Build and Push Multi-arch Image
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - name: Checkout Code
@@ -40,6 +42,9 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/searchbeam
           tags: |
             type=raw,value=latest
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
             type=sha,format=short
           
       - name: Build and Push Multi-arch Image
@@ -59,7 +64,15 @@ jobs:
           script: |
             const sha = context.sha.substring(0, 7);
             const date = new Date().toISOString().split('T')[0];
-            const msg = `🚀 New image built and published: \`ghcr.io/${{ github.repository_owner }}/searchbeam:${sha}\` (${date})\n\n支持架构: linux/amd64, linux/arm64`;
+            let version = '';
+            
+            // 获取版本标签
+            if (context.ref.startsWith('refs/tags/')) {
+              version = context.ref.replace('refs/tags/', '');
+            }
+            
+            const versionInfo = version ? ` (版本: ${version})` : '';
+            const msg = `🚀 新镜像已构建并发布: \`ghcr.io/${{ github.repository_owner }}/searchbeam:${sha}\`${versionInfo} (${date})\n\n支持架构: linux/amd64, linux/arm64`;
             
             github.rest.repos.createCommitComment({
               owner: context.repo.owner,

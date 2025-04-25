@@ -45,3 +45,6 @@ coverage/
 # Other
 TODO.md
 .vercel
+
+# Local Netlify folder
+.netlify

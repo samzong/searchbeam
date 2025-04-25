@@ -1,5 +1,6 @@
 import Fastify, { FastifyInstance } from "fastify";
 import cors from "@fastify/cors";
+import { IncomingMessage, ServerResponse } from "http";
 
 import config from "./config";
 import { authMiddleware } from "./middlewares/authMiddleware";
@@ -9,11 +10,12 @@ import { SearchParams } from "./types";
 // 创建Fastify实例
 const app: FastifyInstance = Fastify({
   logger: true,
+  trustProxy: true // 信任代理，适用于各种云环境
 });
 
 // 注册CORS插件
 app.register(cors, {
-  origin: config.cors.origin,
+  origin: true, // 允许所有来源
   methods: ["GET", "OPTIONS"],
 });
 
@@ -25,14 +27,17 @@ app.get("/", async (request, reply) => {
     version: "1.0.0",
     endpoints: [
       { path: "/health", description: "Health check endpoint" },
-      { path: "/search?platform=youtube&q=baby&token=token", description: "Search endpoint, requires authentication" }
+      { path: "/search?platform=youtube&q=baby", description: "Search endpoint, requires authentication" }
     ]
   };
 });
 
 // 健康检查路由
 app.get("/health", async (request, reply) => {
-  return { status: "ok", timestamp: new Date().toISOString() };
+  return { 
+    status: "ok", 
+    timestamp: new Date().toISOString()
+  };
 });
 
 // 搜索路由，添加认证中间件
@@ -98,7 +103,7 @@ app.setErrorHandler((error, request, reply) => {
   });
 });
 
-// 启动服务器
+// 启动服务器 - 仅在直接运行时启动
 const start = async (): Promise<void> => {
   try {
     await app.listen({ port: config.port, host: "0.0.0.0" });
@@ -114,5 +119,11 @@ if (require.main === module) {
   start();
 }
 
-// 导出应用实例，便于测试
-export default app;
+// 预处理请求，确保应用已准备就绪
+const handler = async (req: IncomingMessage, res: ServerResponse) => {
+  await app.ready();
+  app.server.emit('request', req, res);
+};
+
+// 导出通用处理函数，兼容多种部署环境
+export default handler;
