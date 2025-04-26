@@ -3,11 +3,10 @@
 <div align="center">
   <img src="./yt-search-api.png" alt="yt-search-api logo" width="200" />
   <br />
-  <p>High-performance cloud video search API service for proxying search requests from multiple platforms (such as YouTube)</p>
+  <p>A high-performance API service for yt-dlp proxying online search services. (such as YouTube)</p>
   <p>
     <a href="https://github.com/samzong/yt-search-api/releases"><img src="https://img.shields.io/github/v/release/samzong/yt-search-api" alt="Release Version" /></a>
     <a href="https://github.com/samzong/yt-search-api/blob/main/LICENSE"><img src="https://img.shields.io/github/license/samzong/yt-search-api" alt="MIT License" /></a>
-    <a href="https://github.com/samzong/yt-search-api/actions"><img src="https://img.shields.io/github/actions/workflow/status/samzong/yt-search-api/docker-build.yml?branch=main" alt="Build Status" /></a>
     <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node Version" /></a>
   </p>
 </div>
