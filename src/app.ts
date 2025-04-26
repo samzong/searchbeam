@@ -6,20 +6,21 @@ import config from "./config";
 import { authMiddleware } from "./middlewares/authMiddleware";
 import searchService from "./services/searchService";
 import { SearchParams } from "./types";
+import logger from "./utils/logger";
 
-// 创建Fastify实例
+// Create Fastify instance
 const app: FastifyInstance = Fastify({
   logger: true,
-  trustProxy: true // 信任代理，适用于各种云环境
+  trustProxy: true // Trust proxy, suitable for various cloud environments
 });
 
-// 注册CORS插件
+// Register CORS plugin
 app.register(cors, {
-  origin: true, // 允许所有来源
+  origin: true, // Allow all origins
   methods: ["GET", "OPTIONS"],
 });
 
-// 根路由
+// Root route
 app.get("/", async (request, reply) => {
   return {
     name: "yt-search-api",
@@ -36,7 +37,7 @@ app.get("/", async (request, reply) => {
   };
 });
 
-// 健康检查路由
+// Health check route
 app.get("/health", async (request, reply) => {
   return { 
     status: "ok", 
@@ -44,7 +45,7 @@ app.get("/health", async (request, reply) => {
   };
 });
 
-// 搜索路由，添加认证中间件
+// Search route, add authentication middleware
 app.get(
   "/search",
   {
@@ -58,10 +59,10 @@ app.get(
           q: { type: "string" },
           pageToken: { 
             type: "string",
-            description: "从上一次搜索结果中获取的nextPageToken，用于获取下一页结果" 
+            description: "nextPageToken from previous search results, used to get next page of results" 
           },
           maxResults: { type: "number" },
-          token: { type: "string" }, // 认证Token, 查询参数形式
+          token: { type: "string" }, // Authentication token, in query parameter form
         },
       },
     },
@@ -78,7 +79,7 @@ app.get(
         maxResults,
       });
 
-      // 如果有错误信息，返回400状态码
+      // If there's an error message, return 400 status code
       if (result.error) {
         reply.status(400).send({
           statusCode: 400,
@@ -100,7 +101,7 @@ app.get(
   },
 );
 
-// 错误处理
+// Error handler
 app.setErrorHandler((error, request, reply) => {
   request.log.error(error);
   reply.status(500).send({
@@ -110,27 +111,27 @@ app.setErrorHandler((error, request, reply) => {
   });
 });
 
-// 启动服务器 - 仅在直接运行时启动
+// Start server - only when run directly
 const start = async (): Promise<void> => {
   try {
     await app.listen({ port: config.port, host: "0.0.0.0" });
-    console.log(`Server running in http://localhost:${config.port}`);
+    logger.info(`Server running in http://localhost:${config.port}`);
   } catch (err) {
     app.log.error(err);
     process.exit(1);
   }
 };
 
-// 检查是否是直接运行此文件
+// Check if file is run directly
 if (require.main === module) {
   start();
 }
 
-// 预处理请求，确保应用已准备就绪
+// Preprocess requests, ensure application is ready
 const handler = async (req: IncomingMessage, res: ServerResponse) => {
   await app.ready();
   app.server.emit('request', req, res);
 };
 
-// 导出通用处理函数，兼容多种部署环境
+// Export handler function, compatible with various deployment environments
 export default handler;

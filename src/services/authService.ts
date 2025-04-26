@@ -1,7 +1,7 @@
 import config from "../config";
 
 /**
- * 认证服务实现
+ * Authentication service implementation
  */
 class AuthService {
   private readonly tokens: Set<string>;
@@ -11,9 +11,9 @@ class AuthService {
   }
 
   /**
-   * 验证Token是否有效
-   * @param token 认证Token
-   * @returns Boolean 是否有效
+   * Verify if token is valid
+   * @param token Authentication token
+   * @returns Boolean indicating if token is valid
    */
   verifyToken(token: string): boolean {
     if (!token) return false;
@@ -21,22 +21,22 @@ class AuthService {
   }
 
   /**
-   * 从请求头或查询参数中提取token
-   * @param headers 请求头
-   * @param query 查询参数
+   * Extract token from request headers or query parameters
+   * @param headers Request headers
+   * @param query Query parameters
    * @returns string|undefined Token
    */
   extractToken(
     headers: Record<string, string>,
     query: Record<string, string>,
   ): string | undefined {
-    // 从Authorization头中提取
+    // Extract from Authorization header
     const authHeader = headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       return authHeader.slice(7);
     }
 
-    // 从查询参数中提取
+    // Extract from query parameters
     if (query.token) {
       return query.token;
     }
@@ -45,5 +45,5 @@ class AuthService {
   }
 }
 
-// 导出单例
+// Export singleton instance
 export default new AuthService();

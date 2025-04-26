@@ -65,7 +65,6 @@ Authorization: Bearer your_token
       "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       "title": "Video Title",
       "thumbnailUrl": "https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg",
-      "duration": "3:32",
       "platform": "youtube"
     }
   ],

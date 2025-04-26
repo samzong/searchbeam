@@ -1,7 +1,8 @@
 import dotenv from "dotenv";
 import { join } from "path";
+import logger from "./utils/logger";
 
-// 加载环境变量
+// Load environment variables
 dotenv.config();
 
 interface Config {
@@ -21,14 +22,14 @@ interface Config {
   };
 }
 
-// 从环境变量获取配置，提供默认值
+// Get configuration from environment variables, provide default values
 const config: Config = {
   port: parseInt(process.env.PORT || "3000", 10),
   youtubeApiKeys: (process.env.YOUTUBE_API_KEYS || "").split(",").filter(Boolean),
   authTokens: (process.env.AUTH_TOKENS || "").split(",").filter(Boolean),
   cache: {
     maxItems: parseInt(process.env.CACHE_MAX_ITEMS || "1000", 10),
-    ttl: parseInt(process.env.CACHE_TTL || "600000", 10), // 默认10分钟
+    ttl: parseInt(process.env.CACHE_TTL || "600000", 10), // Default 10 minutes
   },
   cors: {
     origin:
@@ -42,14 +43,14 @@ const config: Config = {
   },
 };
 
-// 验证必要的配置
+// Validate required configuration
 if (config.youtubeApiKeys.length === 0) {
-  console.error("Error: YOUTUBE_API_KEYS environment variable is not set");
+  logger.error("Error: YOUTUBE_API_KEYS environment variable is not set");
   process.exit(1);
 }
 
 if (config.authTokens.length === 0) {
-  console.error("Error: AUTH_TOKENS environment variable is not set");
+  logger.error("Error: AUTH_TOKENS environment variable is not set");
   process.exit(1);
 }
 

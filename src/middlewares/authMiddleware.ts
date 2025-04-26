@@ -1,22 +1,23 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import authService from "../services/authService";
+import logger from "../utils/logger";
 
 /**
- * 身份验证中间件
- * 验证请求中的Token是否有效
+ * Authentication middleware
+ * Validates if the token in the request is valid
  */
 export async function authMiddleware(
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> {
   try {
-    // 从请求中提取token
+    // Extract token from request
     const token = authService.extractToken(
       request.headers as Record<string, string>,
       request.query as Record<string, string>,
     );
 
-    // 如果没有提供token，返回401
+    // If no token provided, return 401
     if (!token) {
       reply.status(401).send({
         statusCode: 401,
@@ -26,7 +27,7 @@ export async function authMiddleware(
       return;
     }
 
-    // 验证token有效性
+    // Verify token validity
     const isValid = authService.verifyToken(token);
     if (!isValid) {
       reply.status(401).send({
@@ -37,9 +38,9 @@ export async function authMiddleware(
       return;
     }
 
-    // 认证通过，继续后续处理
+    // Authentication passed, continue processing
   } catch (error) {
-    console.error("Authentication process error:", error);
+    logger.error("Authentication process error:", error);
     reply.status(500).send({
       statusCode: 500,
       error: "Internal Server Error",
