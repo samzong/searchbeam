@@ -6,7 +6,7 @@ dotenv.config();
 
 interface Config {
   port: number;
-  youtubeApiKey: string;
+  youtubeApiKeys: string[];
   authTokens: string[];
   cache: {
     maxItems: number;
@@ -24,7 +24,7 @@ interface Config {
 // 从环境变量获取配置，提供默认值
 const config: Config = {
   port: parseInt(process.env.PORT || "3000", 10),
-  youtubeApiKey: process.env.YOUTUBE_API_KEY || "",
+  youtubeApiKeys: (process.env.YOUTUBE_API_KEYS || "").split(",").filter(Boolean),
   authTokens: (process.env.AUTH_TOKENS || "").split(",").filter(Boolean),
   cache: {
     maxItems: parseInt(process.env.CACHE_MAX_ITEMS || "1000", 10),
@@ -43,8 +43,8 @@ const config: Config = {
 };
 
 // 验证必要的配置
-if (!config.youtubeApiKey) {
-  console.error("Error: YOUTUBE_API_KEY environment variable is not set");
+if (config.youtubeApiKeys.length === 0) {
+  console.error("Error: YOUTUBE_API_KEYS environment variable is not set");
   process.exit(1);
 }
 

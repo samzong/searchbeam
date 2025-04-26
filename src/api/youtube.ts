@@ -1,9 +1,13 @@
 import axios from "axios";
 import config from "../config";
+import ApiKeyManager from "../utils/apiKeyManager";
 import { SearchParams, SearchResponse, SearchResultItem } from "../types";
 
 // YouTube API基础URL
 const YOUTUBE_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
+
+// 创建API密钥管理器实例
+const apiKeyManager = new ApiKeyManager(config.youtubeApiKeys);
 
 /**
  * YouTube搜索API实现
@@ -13,17 +17,27 @@ export async function searchYoutube(
 ): Promise<SearchResponse> {
   try {
     const { q, pageToken, maxResults = config.pagination.defaultSize } = params;
+    
+    // 获取下一个可用API密钥
+    const apiKey = apiKeyManager.getNextKey();
 
-    // 构造YouTube API请求
+    // 构造YouTube API请求参数
+    const requestParams: Record<string, any> = {
+      part: "snippet",
+      q,
+      maxResults: Math.min(maxResults, config.pagination.maxSize),
+      type: "video",
+      key: apiKey,
+    };
+
+    // 只有当pageToken存在时才添加到请求参数
+    if (pageToken) {
+      requestParams.pageToken = pageToken;
+    }
+
+    // 发送请求
     const response = await axios.get(`${YOUTUBE_API_BASE_URL}/search`, {
-      params: {
-        part: "snippet",
-        q,
-        maxResults: Math.min(maxResults, config.pagination.maxSize),
-        pageToken,
-        type: "video",
-        key: config.youtubeApiKey,
-      },
+      params: requestParams,
     });
 
     const { items, nextPageToken, pageInfo } = response.data;
@@ -49,7 +63,23 @@ export async function searchYoutube(
     };
   } catch (error: any) {
     console.error("YouTube search error:", error.response?.data || error.message);
-
+    
+    // 处理配额限制错误，标记密钥
+    if (error.response?.status === 403 && 
+        error.response?.data?.error?.errors?.some((e: any) => e.reason === "quotaExceeded")) {
+      const limitedKey = error.config?.params?.key;
+      if (limitedKey) {
+        apiKeyManager.markKeyLimited(limitedKey);
+        console.log(`API密钥 ${limitedKey.substring(0, 6)}... 已达到配额限制，已从可用列表中移除`);
+        
+        // 如果还有可用密钥，重试请求
+        if (apiKeyManager.getAvailableKeyCount() > 0) {
+          console.log(`尝试使用其他API密钥重试请求，剩余可用密钥: ${apiKeyManager.getAvailableKeyCount()}`);
+          return searchYoutube(params);
+        }
+      }
+    }
+    
     return {
       items: [],
       error: error.response?.data?.error?.message || "Search request failed",
@@ -63,17 +93,37 @@ export async function searchYoutube(
  */
 export async function getVideoDetails(videoIds: string[]): Promise<any> {
   try {
+    // 获取下一个可用API密钥
+    const apiKey = apiKeyManager.getNextKey();
+    
     const response = await axios.get(`${YOUTUBE_API_BASE_URL}/videos`, {
       params: {
         part: "contentDetails,statistics",
         id: videoIds.join(","),
-        key: config.youtubeApiKey,
+        key: apiKey,
       },
     });
 
     return response.data.items;
-  } catch (error) {
+  } catch (error: any) {
     console.error("Get video details error:", error);
+    
+    // 处理配额限制错误
+    if (error.response?.status === 403 && 
+        error.response?.data?.error?.errors?.some((e: any) => e.reason === "quotaExceeded")) {
+      const limitedKey = error.config?.params?.key;
+      if (limitedKey) {
+        apiKeyManager.markKeyLimited(limitedKey);
+        console.log(`API密钥 ${limitedKey.substring(0, 6)}... 已达到配额限制，已从可用列表中移除`);
+        
+        // 如果还有可用密钥，重试请求
+        if (apiKeyManager.getAvailableKeyCount() > 0) {
+          console.log(`尝试使用其他API密钥重试请求，剩余可用密钥: ${apiKeyManager.getAvailableKeyCount()}`);
+          return getVideoDetails(videoIds);
+        }
+      }
+    }
+    
     return [];
   }
 }

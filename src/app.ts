@@ -27,7 +27,11 @@ app.get("/", async (request, reply) => {
     version: "1.0.0",
     endpoints: [
       { path: "/health", description: "Health check endpoint" },
-      { path: "/search?platform=youtube&q=baby", description: "Search endpoint, requires authentication" }
+      { path: "/search?platform=youtube&q=baby", description: "Search endpoint, requires authentication" },
+      { 
+        path: "/search?platform=youtube&q=baby&pageToken=ABC123", 
+        description: "Search with pageToken for pagination" 
+      }
     ]
   };
 });
@@ -52,7 +56,10 @@ app.get(
         properties: {
           platform: { type: "string" },
           q: { type: "string" },
-          pageToken: { type: "string" },
+          pageToken: { 
+            type: "string",
+            description: "从上一次搜索结果中获取的nextPageToken，用于获取下一页结果" 
+          },
           maxResults: { type: "number" },
           token: { type: "string" }, // 认证Token, 查询参数形式
         },
