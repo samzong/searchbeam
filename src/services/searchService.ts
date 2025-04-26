@@ -1,55 +1,73 @@
 import { searchYoutube } from "../api/youtube";
 import { SearchParams, SearchResponse, SupportedPlatform } from "../types";
 import cacheService from "./cacheService";
+import logger, { createLogger } from "../utils/logger";
+
+// Create a service-specific logger
+const serviceLogger = createLogger("SearchService");
 
 /**
- * 搜索服务实现
+ * Search service implementation
  */
 class SearchService {
   /**
-   * 根据平台分发搜索请求
-   * @param params 搜索参数
-   * @returns Promise<SearchResponse> 搜索结果
+   * Dispatches search requests based on platform
+   * @param params Search parameters
+   * @returns Promise<SearchResponse> Search results
    */
   async search(params: SearchParams): Promise<SearchResponse> {
     const { platform, q, pageToken, maxResults } = params;
 
-    // 验证平台类型
+    // Validate platform type
     if (!this.isValidPlatform(platform)) {
+      serviceLogger.warn(`Unsupported platform requested: ${platform}`);
       return {
         items: [],
-        error: `Unsupported platform: ${platform}. Currently supported: youtube`,
+        error: `Unsupported platform: ${platform}. Currently supported: youtube, bilibili`,
       };
     }
 
-    // 检查缓存
+    serviceLogger.info(`Processing ${platform} search for query: "${q}"`);
+
+    // Check cache
     const cached = cacheService.get(platform, q, pageToken);
     if (cached) {
+      serviceLogger.debug(`Cache hit for query: "${q}" with pageToken: ${pageToken || "first page"}`);
       return cached;
     }
 
-    // 根据平台分发请求
+    // Dispatch request based on platform
     let result: SearchResponse;
 
     try {
       if (platform === "youtube") {
+        serviceLogger.debug(`Dispatching YouTube search for query: "${q}"`);
         result = await searchYoutube(params);
+      } else if (platform === "bilibili") {
+        // TODO: Implement Bilibili search in future versions
+        serviceLogger.warn(`Bilibili search requested but not implemented yet`);
+        result = {
+          items: [],
+          error: "Bilibili search not implemented yet",
+        };
       } else {
-        // 为未来其他平台预留，目前已在上面验证
+        // This should never happen due to type checking, but keeping for safety
+        serviceLogger.error(`Unknown platform type passed validation: ${platform}`);
         result = {
           items: [],
           error: "Platform not available",
         };
       }
 
-      // 缓存结果
+      // Cache results
       if (result.items.length > 0 && !result.error) {
+        serviceLogger.debug(`Caching ${result.items.length} results for query: "${q}"`);
         cacheService.set(platform, q, result, pageToken);
       }
 
       return result;
     } catch (error) {
-      console.error(`Search error (${platform}):`, error);
+      serviceLogger.error(`Search error (${platform}):`, error);
       return {
         items: [],
         error: "Search processing failed",
@@ -58,14 +76,15 @@ class SearchService {
   }
 
   /**
-   * 验证平台是否支持
-   * @param platform 平台名称
-   * @returns boolean 是否支持
+   * Validates if platform is supported
+   * @param platform Platform name
+   * @returns boolean Is platform supported
    */
   private isValidPlatform(platform: string): platform is SupportedPlatform {
-    return platform === "youtube"; // Currently only supports YouTube
+    // Check platform against all values in SupportedPlatform type
+    return ["youtube", "bilibili"].includes(platform as SupportedPlatform);
   }
 }
 
-// 导出单例
+// Export singleton
 export default new SearchService();

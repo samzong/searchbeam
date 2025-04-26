@@ -1,21 +1,20 @@
 /**
- * 统一的视频搜索结果类型定义
+ * Unified video search result item definition
  */
 export interface SearchResultItem {
   videoId: string;
   videoUrl: string;
   title: string;
   thumbnailUrl: string;
-  duration: string;
   platform: string;
   publishedAt?: string;
   channelTitle?: string;
   viewCount?: string;
-  [extraFields: string]: any; // 平台特定附加数据
+  [extraFields: string]: any; // Platform-specific additional data
 }
 
 /**
- * 搜索响应结构
+ * Search response structure
  */
 export interface SearchResponse {
   items: SearchResultItem[];
@@ -25,7 +24,7 @@ export interface SearchResponse {
 }
 
 /**
- * 搜索请求参数
+ * Search request parameters
  */
 export interface SearchParams {
   platform: string;
@@ -35,7 +34,7 @@ export interface SearchParams {
 }
 
 /**
- * API错误响应
+ * API error response
  */
 export interface ApiError {
   statusCode: number;
@@ -44,6 +43,6 @@ export interface ApiError {
 }
 
 /**
- * 支持的搜索平台类型
+ * Supported search platform types
  */
 export type SupportedPlatform = "youtube" | "bilibili";

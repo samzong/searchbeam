@@ -1,8 +1,8 @@
-// Vercel Serverless函数适配文件
+// Vercel Serverless function adapter file
 import { VercelRequest, VercelResponse } from '@vercel/node';
 import handler from '../src/app';
 
-// 导出Vercel函数处理器
+// Export Vercel function handler
 export default async function (req: VercelRequest, res: VercelResponse) {
   return handler(req, res);
 } 

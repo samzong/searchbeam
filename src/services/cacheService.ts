@@ -3,15 +3,15 @@ import config from "../config";
 import { SearchResponse } from "../types";
 
 /**
- * 缓存配置
+ * Cache configuration
  */
 const cacheOptions = {
   max: config.cache.maxItems,
-  ttl: config.cache.ttl, // 缓存有效期，毫秒
+  ttl: config.cache.ttl, // Cache expiration in milliseconds
 };
 
 /**
- * 搜索缓存服务实现
+ * Search cache service implementation
  */
 class CacheService {
   private cache: LRUCache<string, SearchResponse>;
@@ -21,7 +21,7 @@ class CacheService {
   }
 
   /**
-   * 生成缓存键
+   * Generate cache key
    */
   private generateKey(
     platform: string,
@@ -32,7 +32,7 @@ class CacheService {
   }
 
   /**
-   * 获取缓存内容
+   * Get cached content
    */
   get(
     platform: string,
@@ -44,7 +44,7 @@ class CacheService {
   }
 
   /**
-   * 存储内容到缓存
+   * Store content in cache
    */
   set(
     platform: string,
@@ -57,7 +57,7 @@ class CacheService {
   }
 
   /**
-   * 删除指定缓存
+   * Delete specific cache entry
    */
   delete(platform: string, query: string, pageToken?: string): void {
     const key = this.generateKey(platform, query, pageToken);
@@ -65,12 +65,12 @@ class CacheService {
   }
 
   /**
-   * 清除所有缓存
+   * Clear all cache
    */
   clear(): void {
     this.cache.clear();
   }
 }
 
-// 导出单例
+// Export singleton instance
 export default new CacheService();
