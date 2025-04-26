@@ -24,27 +24,24 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# 编辑器配置
+# Editor configuration
 .idea/
 .vscode/
 *.swp
 *.swo
 .DS_Store
 
-# 测试覆盖率
+# Test coverage
 coverage/
 
-# 缓存目录
+# Cache directory
 .npm
 .eslintcache
 .cache
 
-# API密钥和凭据
+# API keys and credentials
 *.pem
 
 # Other
 TODO.md
 .vercel
-
-# Local Netlify folder
-.netlify

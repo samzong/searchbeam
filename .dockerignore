@@ -8,5 +8,3 @@ README.md
 tests
 .vscode
 .idea
-# 不要排除src目录，我们需要它来构建项目
-# src 

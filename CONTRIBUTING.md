@@ -1,51 +1,51 @@
-# 贡献指南
+# Contributing Guide
 
-感谢您考虑为 SearchBeam 项目做出贡献！以下是一些指导方针，帮助您参与到项目中来。
+Thank you for considering contributing to the yt-search-api project! Here are some guidelines to help you get involved in the project.
 
-## 贡献流程
+## Contribution Process
 
-1. Fork 本仓库
-2. 创建一个新分支：`git checkout -b feature/your-feature-name`
-3. 进行代码修改
-4. 确保通过所有测试：`npm test`
-5. 提交您的更改：`git commit -m '添加了某某功能'`
-6. 推送到分支：`git push origin feature/your-feature-name`
-7. 提交 Pull Request
+1. Fork this repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make code changes
+4. Ensure all tests pass: `npm test`
+5. Commit your changes: `git commit -m 'Added some feature'`
+6. Push to the branch: `git push origin feature/your-feature-name`
+7. Submit a Pull Request
 
-## 代码风格
+## Code Style
 
-- 使用 TypeScript 编写所有代码
-- 遵循项目中的 ESLint 和 Prettier 规则
-- 为所有新功能编写测试
-- 保持代码注释清晰明确
+- Write all code in TypeScript
+- Follow the ESLint and Prettier rules in the project
+- Write tests for all new features
+- Keep code comments clear and concise
 
-## 拉取请求指南
+## Pull Request Guidelines
 
-- 每个 PR 应该专注于一个功能或修复
-- 包含清晰的描述说明此 PR 解决了什么问题
-- 如果更改与现有 issue 相关，请在 PR 描述中引用 issue 编号
-- 所有 PR 必须通过 CI 测试才能合并
+- Each PR should focus on one feature or fix
+- Include a clear description explaining what problem this PR solves
+- If the change is related to an existing issue, reference the issue number in the PR description
+- All PRs must pass CI tests before they can be merged
 
-## 添加新的平台支持
+## Adding Support for New Platforms
 
-如果您想添加对新视频平台的支持，请按照以下步骤：
+If you want to add support for a new video platform, follow these steps:
 
-1. 在`/src/api`目录下创建新文件，例如`newplatform.ts`
-2. 实现符合统一接口的搜索功能
-3. 添加平台特定的类型定义
-4. 在`/services/searchService.ts`中注册新平台
-5. 添加适当的测试
-6. 更新文档
+1. Create a new file in the `/src/api` directory, for example `newplatform.ts`
+2. Implement search functionality that conforms to the unified interface
+3. Add platform-specific type definitions
+4. Register the new platform in `/services/searchService.ts`
+5. Add appropriate tests
+6. Update documentation
 
-## 问题报告
+## Issue Reporting
 
-如果您发现问题或有改进建议，请创建新的 issue，并尽可能提供：
+If you find an issue or have a suggestion for improvement, please create a new issue and provide as much of the following as possible:
 
-- 清晰简洁的问题描述
-- 重现步骤
-- 预期结果与实际结果的对比
-- 系统环境信息（Node.js 版本等）
+- A clear and concise description of the issue
+- Steps to reproduce
+- Expected vs actual results
+- System environment information (Node.js version, etc.)
 
-## 许可
+## License
 
-通过贡献代码，您同意您的贡献将在 MIT 许可下提供。
+By contributing code, you agree that your contributions will be provided under the MIT license.

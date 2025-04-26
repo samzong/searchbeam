@@ -61,7 +61,7 @@ ${commitLog}
 ### Docker Image
 
 \`\`\`bash
-docker pull ghcr.io/${context.repo.owner}/searchbeam:${process.env.GITHUB_REF.replace('refs/tags/', '')}
+docker pull ghcr.io/${context.repo.owner}/yt-search-api:${process.env.GITHUB_REF.replace('refs/tags/', '')}
 \`\`\`
 
 Supported architectures: linux/amd64, linux/arm64`;
@@ -123,8 +123,8 @@ Supported architectures: linux/amd64, linux/arm64`;
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/searchbeam:${{ github.ref_name }}
-            ghcr.io/${{ github.repository_owner }}/searchbeam:latest
+            ghcr.io/${{ github.repository_owner }}/yt-search-api:${{ github.ref_name }}
+            ghcr.io/${{ github.repository_owner }}/yt-search-api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
           
@@ -137,5 +137,5 @@ Supported architectures: linux/amd64, linux/arm64`;
               owner: context.repo.owner,
               repo: context.repo.repo,
               release_id: ${{ needs.create-release.outputs.upload_url }}.split('/')[7].split('?')[0],
-              body: ${{ steps.changelog.outputs.result }} + `\n\nDocker Image Updated: \`ghcr.io/${{ github.repository_owner }}/searchbeam:${{ github.ref_name }}\`\nSupported architectures: linux/amd64, linux/arm64`
+              body: ${{ steps.changelog.outputs.result }} + `\n\nDocker Image Updated: \`ghcr.io/${{ github.repository_owner }}/yt-search-api:${{ github.ref_name }}\`\nSupported architectures: linux/amd64, linux/arm64`
             }); 

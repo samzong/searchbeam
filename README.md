@@ -1,51 +1,51 @@
-# SearchBeam
+# yt-search-api
 
-一个高性能的云端视频搜索API服务，用于代理多平台(如YouTube)的搜索请求。
+A high-performance cloud video search API service that is used to proxy search requests from multiple platforms (such as YouTube).
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 项目简介
+## Introduction
 
-SearchBeam是一个轻量级的视频搜索代理API服务，专为需要集成多平台视频搜索功能的应用而设计。目前支持YouTube搜索，未来计划扩展至更多平台。
+yt-search-api is a lightweight video search proxy API service designed for applications that need to integrate multi-platform video search capabilities. YouTube search is currently supported, with plans to expand to more platforms in the future.
 
-## 核心特性
+## Core Features
 
-- 🚀 高性能：支持多用户高并发访问
-- 🔒 安全性：简单Token鉴权机制
-- 🔄 缓存优化：内置智能缓存策略，减少重复请求
-- 🔌 扩展性：模块化设计，易于扩展支持更多视频平台
+- 🚀 High Performance: Supports multi-user high-concurrency access
+- 🔒 Security: Simple token authentication mechanism
+- 🔄 Cache Optimization: Built-in smart caching strategy to reduce duplicate requests
+- 🔌 Extensibility: Modular design, easy to extend support for more video platforms
 
-## 技术栈
+## Tech Stack
 
 - Node.js (>=18) + TypeScript
-- Fastify框架
-- 内存缓存 (lru-cache)
-- Jest测试框架
+- Fastify framework
+- Memory cache (lru-cache)
+- Jest testing framework
 
-## API文档
+## API Documentation
 
-### 搜索接口
+### Search Endpoint
 
-**请求:**
+**Request:**
 
 ```
 GET /search?platform=youtube&q=keyword
 ```
 
-**参数:**
+**Parameters:**
 
-- `platform` (必填): 搜索平台，目前支持 `youtube`
-- `q` (必填): 搜索关键词
+- `platform` (required): Search platform, currently supports `youtube`
+- `q` (required): Search keyword
 
-**认证:**
+**Authentication:**
 
-在请求头中添加以下字段:
+Add the following field to the request header:
 
 ```
 Authorization: Bearer your_token
 ```
 
-**响应示例:**
+**Response Example:**
 
 ```json
 {
@@ -53,7 +53,7 @@ Authorization: Bearer your_token
     {
       "videoId": "dQw4w9WgXcQ",
       "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      "title": "视频标题",
+      "title": "Video Title",
       "thumbnailUrl": "https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg",
       "duration": "3:32",
       "platform": "youtube"
@@ -64,14 +64,6 @@ Authorization: Bearer your_token
 }
 ```
 
-## 贡献指南
+## License
 
-1. Fork本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 创建Pull Request
-
-## 开源协议
-
-本项目采用MIT开源协议 - 详情见[LICENSE](LICENSE)文件
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

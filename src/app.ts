@@ -22,7 +22,7 @@ app.register(cors, {
 // 根路由
 app.get("/", async (request, reply) => {
   return {
-    name: "searchbeam",
+    name: "yt-search-api",
     description: "High-performance cloud video search API service, proxy multi-platform search request.",
     version: "1.0.0",
     endpoints: [
