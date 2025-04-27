@@ -16,7 +16,7 @@ const app: FastifyInstance = Fastify({
 
 // Register CORS plugin
 app.register(cors, {
-  origin: true, // Allow all origins
+  origin: config.cors.origin, // Use configured CORS origin
   methods: ["GET", "OPTIONS"],
 });
 
