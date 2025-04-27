@@ -23,12 +23,12 @@ export async function searchYoutube(
   params: SearchParams,
 ): Promise<SearchResponse> {
   let retryCount = 0;
-  
+
   // Use loop instead of recursion
-  while (retryCount <= MAX_RETRY_ATTEMPTS) {
+  while (retryCount < MAX_RETRY_ATTEMPTS) {
     try {
       const { q, pageToken, maxResults = config.pagination.defaultSize } = params;
-      
+
       // Check if any API keys are available
       if (apiKeyManager.getAvailableKeyCount() === 0) {
         apiLogger.error("All API keys have reached quota limits");
@@ -37,7 +37,7 @@ export async function searchYoutube(
           error: "All API keys have reached quota limits",
         };
       }
-      
+
       // Get next available API key
       const apiKey = apiKeyManager.getNextKey();
       apiLogger.debug(`Using API key: ${apiKey.substring(0, 6)}... for search query: "${q}"`);
@@ -85,18 +85,18 @@ export async function searchYoutube(
         totalResults: pageInfo?.totalResults,
       };
     } catch (error: any) {
-      apiLogger.error("YouTube search error:", error.response?.data || error.message);
-      
+      apiLogger.error("YouTube search error:", error.response?.data?.error?.message || error.message);
+
       // Handle quota limit error, mark key
       if (
-        error.response?.status === 403 && 
+        error.response?.status === 403 &&
         error.response?.data?.error?.errors?.some((e: any) => e.reason === "quotaExceeded")
       ) {
         const limitedKey = error.config?.params?.key;
         if (limitedKey) {
           apiKeyManager.markKeyLimited(limitedKey);
           apiLogger.warn(`API key ${limitedKey.substring(0, 6)}... has reached quota limit, removed from available list`);
-          
+
           // If there are still available keys, retry
           if (apiKeyManager.getAvailableKeyCount() > 0) {
             retryCount++;
@@ -105,15 +105,16 @@ export async function searchYoutube(
           }
         }
       }
-      
-      // Max retry attempts reached or other error
+
+      // Other error (not quota limit)
+      apiLogger.error("YouTube search error (not quota limit):", error.response?.data?.error?.message || error.message);
       return {
         items: [],
-        error: error.response?.data?.error?.message || "Search request failed",
+        error: error.response?.data?.error?.message || "YouTube search request failed",
       };
     }
   }
-  
+
   // If max retry attempts reached
   apiLogger.error(`Maximum retry attempts (${MAX_RETRY_ATTEMPTS}) reached, search request failed`);
   return {

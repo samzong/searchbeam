@@ -23,7 +23,7 @@ class SearchService {
       serviceLogger.warn(`Unsupported platform requested: ${platform}`);
       return {
         items: [],
-        error: `Unsupported platform: ${platform}. Currently supported: youtube, bilibili`,
+        error: `Unsupported platform: ${platform}. Currently supported: youtube`,
       };
     }
 
