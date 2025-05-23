@@ -8,6 +8,7 @@
     <a href="https://github.com/samzong/yt-search-api/releases"><img src="https://img.shields.io/github/v/release/samzong/yt-search-api" alt="Release Version" /></a>
     <a href="https://github.com/samzong/yt-search-api/blob/main/LICENSE"><img src="https://img.shields.io/github/license/samzong/yt-search-api" alt="MIT License" /></a>
     <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-%3E%3D18-brightgreen" alt="Node Version" /></a>
+    <a href="https://deepwiki.com/samzong/yt-search-api"><img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki"></a>
   </p>
 </div>
 
